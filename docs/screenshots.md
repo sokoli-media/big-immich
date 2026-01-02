@@ -1,10 +1,8 @@
 # Big Immich (example slideshows)
 
-> ⚠️ **Important:**
-> 
-> Screenshots below were taken on an 80" screen and your experience may vary.
->
-> Some of the views may be modified without screenshots being updated.
+> ⚠️ Screenshots below were taken on an 80" screen and your experience may vary.
+
+> ⚠️ Some of the views may be modified without screenshots being updated.
 
 All albums:
 
@@ -25,3 +23,5 @@ Paused slideshow:
 Part of the app settings:
 
 ![app settings](./static/4-settings.png)
+
+That's it!
