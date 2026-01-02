@@ -2,7 +2,9 @@
 
 **Community tvOS app for Immich (Apple TV)**
 
-> A simple, free community app to display Immich photo and video slideshows on your Apple TV.
+> A simple, free community app to display Immich photo and video slideshows on your Apple TV (and do nothing else).
+
+**TL;DR:** see [screenshots](docs/contributing.md) to check if it's what you're looking for.
 
 This is a **community-driven project** and is **not affiliated with Immich**.
 
@@ -67,7 +69,7 @@ There may still be bugs or edge cases — this is a community project.
 
 If you encounter a problem:
 
-1. Please read the [Contributing Guidelines](./contributing.md)
+1. Please read the [Contributing Guidelines](docs/contributing.md)
 2. Make sure you are running the **latest stable version of Immich**
 3. Open a GitHub issue with clear reproduction steps
 
@@ -91,6 +93,6 @@ Contributions are **very welcome**, including:
 
 If you want to help:
 
-* Read the [Contributing Guidelines](./contributing.md)
+* Read the [Contributing Guidelines](docs/contributing.md)
 * Open an issue to discuss ideas
 * Submit a pull request — even small ones are appreciated
