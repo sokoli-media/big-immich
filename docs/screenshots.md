@@ -6,22 +6,22 @@
 
 All albums:
 
-![albums view](./static/0-albums.png)
+![albums view](./static/0-albums.jpg)
 
 Album details:
 
-![album details](./static/1-album-details.png)
+![album details](./static/1-album-details.jpg)
 
 All album assets:
 
-![album assets](./static/2-album-assets.png)
+![album assets](./static/2-album-assets.jpg)
 
 Paused slideshow:
 
-![paused slideshow](./static/3-slideshow-paused.png)
+![paused slideshow](./static/3-slideshow-paused.jpg)
 
 Part of the app settings:
 
-![app settings](./static/4-settings.png)
+![app settings](./static/4-settings.jpg)
 
 That's it!
