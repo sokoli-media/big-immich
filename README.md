@@ -11,7 +11,7 @@ This is a **community-driven project** and is **not affiliated with Immich**.
 This is a simple, free community app to display Immich slideshows on your Apple TV.
 It doesn't do anything else.
 
-It can be installed from the Apple App Store.
+It can be installed from the [Apple App Store](https://apps.apple.com/us/app/big-immich/id6756897502).
 
 See [screenshots](docs/screenshots.md) to check if it's what you're looking for.
 
@@ -49,9 +49,7 @@ If you are looking for more advanced gallery features, you may also want to chec
 
 ### App Store
 
-The easiest way to use Big Immich is via the **Apple App Store**.
-
-> 📌 A direct App Store link will be added here once the app becomes publicly available.
+The easiest way to use Big Immich is via the [Apple App Store](https://apps.apple.com/us/app/big-immich/id6756897502).
 
 ### First launch
 
