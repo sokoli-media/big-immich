@@ -37,6 +37,8 @@ struct SlideshowView: View {
         SlideshowAction = .goToPrevious
     @AppStorage("slideshowOnceEndedAction") private
         var slideshowOnceEndedAction: SlideshowOnceEndedAction = .stopAndNotify
+    @AppStorage("slideshowShowProgressBar") private
+        var slideshowShowProgressBar: SlideshowShowProgressBar = .always
 
     // slideshow + overlays
     @State private var slideshowTimer: Timer? = nil
@@ -206,19 +208,21 @@ struct SlideshowView: View {
             }
 
             // progress bar
-            GeometryReader { geometry in
-                Rectangle()
-                    .fill(Color.gray.opacity(0.6))
-                    .frame(
-                        width: geometry.size.width * assetProgress,
-                        height: 4
-                    )
-                    .position(
-                        x: geometry.size.width / 2,
-                        y: geometry.size.height - 2
-                    )
+            if slideshowShowProgressBar == .always {
+                GeometryReader { geometry in
+                    Rectangle()
+                        .fill(Color.gray.opacity(0.6))
+                        .frame(
+                            width: geometry.size.width * assetProgress,
+                            height: 4
+                        )
+                        .position(
+                            x: geometry.size.width / 2,
+                            y: geometry.size.height - 2
+                        )
+                }
+                .ignoresSafeArea()
             }
-            .ignoresSafeArea()
 
             // errors overlay
             if !errors.isEmpty {

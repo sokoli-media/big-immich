@@ -28,6 +28,13 @@ enum SlideshowOnceEndedAction: String, CaseIterable, Identifiable {
     var id: String { rawValue }
 }
 
+enum SlideshowShowProgressBar: String, CaseIterable, Identifiable {
+    case always
+    case never
+
+    var id: String { rawValue }
+}
+
 struct SettingsView: View {
     // immich settings, saved to the Keychain
     @State private var immichURL: String = ""
@@ -46,6 +53,8 @@ struct SettingsView: View {
         SlideshowAction = .goToPrevious
     @AppStorage("slideshowOnceEndedAction") private
         var slideshowOnceEndedAction: SlideshowOnceEndedAction = .stopAndNotify
+    @AppStorage("slideshowShowProgressBar") private
+        var slideshowShowProgressBar: SlideshowShowProgressBar = .always
 
     // error reporting
     @AppStorage("sentryEnabled") private var sentryEnabled: Bool = false
@@ -144,7 +153,7 @@ struct SettingsView: View {
                                 "Tip: use the Apple TV remote app on your iPhone to copy the api key"
                             )
                             .foregroundColor(.white)
-                            
+
                         case .emailAndPassword:
                             HStack {
                                 Text("Email")
@@ -280,6 +289,29 @@ struct SettingsView: View {
                             .pickerStyle(.menu)
                         }
 
+                        HStack {
+                            Text("Progress bar")
+                                .frame(
+                                    width: leftSideWidth,
+                                    alignment: .leading
+                                )
+                                .bold()
+
+                            Picker(
+                                "Progress bar",
+                                selection: $slideshowShowProgressBar
+                            ) {
+                                Text("show").tag(
+                                    SlideshowShowProgressBar.always
+                                )
+                                Text("don't show").tag(
+                                    SlideshowShowProgressBar.never
+                                )
+                            }
+                            .pickerStyle(.inline)
+                            .frame(width: geo.size.width * 0.3)
+                        }
+
                         Divider().frame(
                             width: leftSideWidth + geo.size.width * 0.4
                         )
@@ -401,7 +433,7 @@ struct SettingsView: View {
                                 )
                             }
                             .pickerStyle(.inline)
-                            .frame(width: geo.size.width * 0.4)
+                            .frame(width: geo.size.width * 0.3)
                         }
 
                         HStack {
