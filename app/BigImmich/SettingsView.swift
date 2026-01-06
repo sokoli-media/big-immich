@@ -1,4 +1,3 @@
-import Immich
 import ImmichAPI
 import KeychainHelper
 import SwiftUI
