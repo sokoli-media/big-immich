@@ -30,6 +30,19 @@ class ContentProvider: TVTopShelfContentProvider {
     {
         let item = TVTopShelfSectionedItem(identifier: album.id)
         item.title = album.albumName
+        item.imageShape = .hdtv
+
+        var components = URLComponents()
+        components.scheme = "bigimmich"
+        components.host = "album"
+        components.path = "/details"
+        components.queryItems = [
+            URLQueryItem(name: "albumID", value: album.id),
+            URLQueryItem(name: "albumName", value: album.albumName),
+        ]
+        if let url = components.url {
+            item.displayAction = TVTopShelfAction(url: url)
+        }
 
         let thumbnailUrl = await getThumbnailURL(album: album)
         if let thumbnailUrl {
