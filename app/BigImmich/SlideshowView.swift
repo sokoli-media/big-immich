@@ -1,4 +1,5 @@
 import AVKit
+import ImmichAPI
 import Sentry
 import SwiftUI
 
@@ -451,9 +452,11 @@ struct SlideshowView: View {
             } else if asset.type.uppercased() == "VIDEO" {
                 var playbackURL: URL
                 do {
-                    playbackURL = try await ImmichAPI.shared.getPlaybackUrl(
-                        path: "/api/assets/\(asset.id)/video/playback"
-                    )
+                    playbackURL = try await ImmichAPI.shared
+                        .getUrlWithQueryAuth(
+                            path: "/api/assets/\(asset.id)/video/playback",
+                            queryParams: nil
+                        )
                 } catch {
                     showError(
                         "loading video failed: failed to construct playback URL"

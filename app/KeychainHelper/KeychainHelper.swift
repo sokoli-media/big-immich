@@ -1,19 +1,28 @@
 //
 //  KeychainHelper.swift
-//  BigImmich
+//  KeychainHelper
 //
-//  Created by Maciej Płoński on 19/12/2025.
+//  Created by Maciej Płoński on 06/01/2026.
 //
 
 import Foundation
 import Security
 
-class KeychainHelper {
-    static func saveImmichAPIAuthMethod(method: ImmichAPIAuthMethod) -> Bool {
+public enum ImmichAPIAuthMethod: String, CaseIterable, Identifiable {
+    case apiKey
+    case emailAndPassword
+
+    public var id: String { rawValue }
+}
+
+public class KeychainHelper {
+    static public func saveImmichAPIAuthMethod(method: ImmichAPIAuthMethod)
+        -> Bool
+    {
         return save(method.rawValue, forKey: "immichAPIAuthMethod")
     }
 
-    static func loadImmichAPIAuthMethod() -> ImmichAPIAuthMethod? {
+    static public func loadImmichAPIAuthMethod() -> ImmichAPIAuthMethod? {
         if let method = load(forKey: "immichAPIAuthMethod") {
             return ImmichAPIAuthMethod(rawValue: method)
         } else {
@@ -21,11 +30,11 @@ class KeychainHelper {
         }
     }
 
-    static func saveImmichURL(url: String) -> Bool {
+    static public func saveImmichURL(url: String) -> Bool {
         return save(url, forKey: "immichURL")
     }
 
-    static func loadImmichURL() -> String? {
+    static public func loadImmichURL() -> String? {
         let value = load(forKey: "immichURL")
 
         if value == "" {
@@ -34,11 +43,11 @@ class KeychainHelper {
         return value
     }
 
-    static func saveImmichAuthEmail(email: String) -> Bool {
+    static public func saveImmichAuthEmail(email: String) -> Bool {
         return save(email, forKey: "immichAuthEmail")
     }
 
-    static func loadImmichAuthEmail() -> String? {
+    static public func loadImmichAuthEmail() -> String? {
         let value = load(forKey: "immichAuthEmail")
 
         if value == "" {
@@ -47,11 +56,11 @@ class KeychainHelper {
         return value
     }
 
-    static func saveImmichAuthPassword(password: String) -> Bool {
+    static public func saveImmichAuthPassword(password: String) -> Bool {
         return save(password, forKey: "immichAuthPassword")
     }
 
-    static func loadImmichAuthPassword() -> String? {
+    static public func loadImmichAuthPassword() -> String? {
         let value = load(forKey: "immichAuthPassword")
 
         if value == "" {
@@ -60,11 +69,11 @@ class KeychainHelper {
         return value
     }
 
-    static func saveImmichAPIKey(key: String) -> Bool {
+    static public func saveImmichAPIKey(key: String) -> Bool {
         return save(key, forKey: "immichAuthAPIKey")
     }
 
-    static func loadImmichAPIKey() -> String? {
+    static public func loadImmichAPIKey() -> String? {
         let value = load(forKey: "immichAuthAPIKey")
 
         if value == "" {
@@ -84,19 +93,26 @@ class KeychainHelper {
             kSecAttrAccount as String: key,
             kSecValueData as String: data,
             kSecAttrAccessible as String: kSecAttrAccessibleWhenUnlocked,
+            kSecAttrAccessGroup as String: "3U4PH469WK.nl.slakje.BigImmich",
         ]
 
         let status = SecItemAdd(query as CFDictionary, nil)
         return status == errSecSuccess
     }
 
-    static func load(forKey key: String) -> String? {
-        let query: [String: Any] = [
+    static func load(forKey key: String, withAccessGroup: Bool = true)
+        -> String?
+    {
+        var query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrAccount as String: key,
             kSecReturnData as String: true,
             kSecMatchLimit as String: kSecMatchLimitOne,
         ]
+        if withAccessGroup {
+            query[kSecAttrAccessGroup as String] =
+                "3U4PH469WK.nl.slakje.BigImmich"
+        }
 
         var result: AnyObject?
         let status = SecItemCopyMatching(query as CFDictionary, &result)
@@ -106,6 +122,13 @@ class KeychainHelper {
             let value = String(data: data, encoding: .utf8)
         {
             return value
+        }
+
+        // temporary migration to a keychain with access group
+        if let oldValue = self.load(forKey: key, withAccessGroup: false) {
+            if save(oldValue, forKey: key) {
+                return oldValue
+            }
         }
 
         return nil

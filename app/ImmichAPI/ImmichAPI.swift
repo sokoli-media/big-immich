@@ -1,6 +1,7 @@
 import Foundation
+import KeychainHelper
 
-enum ImmichAPIError: Error, LocalizedError {
+public enum ImmichAPIError: Error, LocalizedError {
     case missingConfig
     case badUrl
     case badResponse
@@ -9,7 +10,7 @@ enum ImmichAPIError: Error, LocalizedError {
     case unknownError
     case unauthorized
 
-    var errorDescription: String? {
+    public var errorDescription: String? {
         switch self {
         case .missingConfig:
             return "missing configuration"
@@ -29,7 +30,7 @@ enum ImmichAPIError: Error, LocalizedError {
     }
 }
 
-struct ImmichAPIConfig {
+public struct ImmichAPIConfig {
     let baseURL: String
     let authMethod: ImmichAPIAuthMethod
 
@@ -157,7 +158,6 @@ class ImmichAPIClient {
                 errorMessage = "Unknown decoding error: \(decodingError)"
             }
 
-            logError(decodingError)
             throw ImmichAPIError.badJsonResponse(description: errorMessage)
         }
     }
@@ -194,8 +194,8 @@ class ImmichAPIClient {
     }
 }
 
-class ImmichAPIAuthenticator {
-    static let shared = ImmichAPIAuthenticator()
+public actor ImmichAPIAuthenticator {
+    public static let shared = ImmichAPIAuthenticator()
 
     private var token: String?
     private var isAuthenticating = false
@@ -206,12 +206,12 @@ class ImmichAPIAuthenticator {
     private struct LoginResponse: Codable {
         let accessToken: String
     }
-    
-    func logout() {
+
+    public func logout() async {
         self.token = nil
     }
 
-    func login(config: ImmichAPIConfig) async throws -> String {
+    public func login(config: ImmichAPIConfig) async throws -> String {
         guard config.authMethod == .emailAndPassword else {
             throw ImmichAPIError.unknownError
         }  // this method supports email/pass auth only
@@ -260,8 +260,8 @@ class ImmichAPIAuthenticator {
     }
 }
 
-class ImmichAPI {
-    static let shared = ImmichAPI()
+public actor ImmichAPI {
+    public static let shared = ImmichAPI()
 
     private init() {}
 
@@ -356,7 +356,7 @@ class ImmichAPI {
                     jsonPayload: nil,
                 )
         } catch ImmichAPIError.unauthorized {
-            ImmichAPIAuthenticator.shared.logout()
+            await ImmichAPIAuthenticator.shared.logout()
 
             return try await ImmichAPIClient(baseURL: config.baseURL)
                 .loadObject(
@@ -414,7 +414,7 @@ class ImmichAPI {
                 jsonPayload: nil,
             )
         } catch ImmichAPIError.unauthorized {
-            ImmichAPIAuthenticator.shared.logout()
+            await ImmichAPIAuthenticator.shared.logout()
 
             return try await ImmichAPIClient(baseURL: config.baseURL).loadMedia(
                 httpMethod: "GET",
@@ -428,18 +428,28 @@ class ImmichAPI {
         }
     }
 
-    public func getPlaybackUrl(path: String) async throws -> URL {
+    public func getUrlWithQueryAuth(
+        path: String,
+        queryParams: [String: String]?
+    ) async throws -> URL {
         // this method shouldn't be called as the first one,
         // so there's no need to catch 401 and log out user here
         guard let config = getConfig() else {
             throw ImmichAPIError.missingConfig
         }
 
-        let playbackUrl = try ImmichAPIClient(
+        var urlQueryParams = try await findAuthQueryParams()
+        if let queryParams {
+            urlQueryParams = urlQueryParams.merging(queryParams) { (_, new) in
+                new
+            }
+        }
+
+        let playbackUrl = ImmichAPIClient(
             baseURL: config.baseURL
         ).getUrl(
             path: path,
-            queryParams: await findAuthQueryParams(),
+            queryParams: urlQueryParams,
         )
         guard let playbackUrl else { throw ImmichAPIError.badUrl }
 

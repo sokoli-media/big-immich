@@ -1,3 +1,4 @@
+import ImmichAPI
 import Sentry
 import SwiftUI
 

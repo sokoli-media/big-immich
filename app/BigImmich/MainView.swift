@@ -124,7 +124,7 @@ struct ContentView: View {
                                 albumID = nil
                                 albumName = nil
                                 assetID = nil
-                                
+
                                 selectedTab = .albums
                             })
                     }
@@ -132,7 +132,45 @@ struct ContentView: View {
                     Spacer()
                 }
             }
+        }.onOpenURL { url in
+            handleTopShelfURL(url)
         }
+    }
+
+    private func getQueryParamValue(queryItems: [URLQueryItem], key: String)
+        -> String?
+    {
+        return queryItems.first(where: {
+            $0.name == key
+        })?.value
+    }
+
+    func handleTopShelfURL(_ url: URL) {
+        guard url.scheme == "bigimmich" else { return }
+        guard let host = url.host, host == "album" else { return }
+
+        let components = URLComponents(url: url, resolvingAgainstBaseURL: false)
+        let queryItems = components?.queryItems ?? []
+
+        let pathComponents = url.pathComponents.filter { $0 != "/" }
+        guard let page = pathComponents.first, page == "details" else { return }
+
+        let selectedAlbumID = getQueryParamValue(
+            queryItems: queryItems,
+            key: "albumID"
+        )
+        let selectedAlbumName = getQueryParamValue(
+            queryItems: queryItems,
+            key: "albumName"
+        )
+        guard let selectedAlbumID, let selectedAlbumName else { return }
+
+        albumID = selectedAlbumID
+        albumName = selectedAlbumName
+        assetID = nil
+        albumDetailsInitialyFocusedButton = .slideshow
+
+        selectedTab = .albumDetails
     }
 }
 

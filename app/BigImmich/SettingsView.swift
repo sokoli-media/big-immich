@@ -1,11 +1,7 @@
+import Immich
+import ImmichAPI
+import KeychainHelper
 import SwiftUI
-
-enum ImmichAPIAuthMethod: String, CaseIterable, Identifiable {
-    case apiKey
-    case emailAndPassword
-
-    var id: String { rawValue }
-}
 
 enum SlideshowDirection: String, CaseIterable, Identifiable {
     case oldestToNewest
