@@ -93,19 +93,26 @@ public class KeychainHelper {
             kSecAttrAccount as String: key,
             kSecValueData as String: data,
             kSecAttrAccessible as String: kSecAttrAccessibleWhenUnlocked,
+            kSecAttrAccessGroup as String: "3U4PH469WK.nl.slakje.BigImmich",
         ]
 
         let status = SecItemAdd(query as CFDictionary, nil)
         return status == errSecSuccess
     }
 
-    static func load(forKey key: String) -> String? {
-        let query: [String: Any] = [
+    static func load(forKey key: String, withAccessGroup: Bool = true)
+        -> String?
+    {
+        var query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrAccount as String: key,
             kSecReturnData as String: true,
             kSecMatchLimit as String: kSecMatchLimitOne,
         ]
+        if withAccessGroup {
+            query[kSecAttrAccessGroup as String] =
+                "3U4PH469WK.nl.slakje.BigImmich"
+        }
 
         var result: AnyObject?
         let status = SecItemCopyMatching(query as CFDictionary, &result)
@@ -115,6 +122,13 @@ public class KeychainHelper {
             let value = String(data: data, encoding: .utf8)
         {
             return value
+        }
+
+        // temporary migration to a keychain with access group
+        if let oldValue = self.load(forKey: key, withAccessGroup: false) {
+            if save(oldValue, forKey: key) {
+                return oldValue
+            }
         }
 
         return nil

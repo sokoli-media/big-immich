@@ -428,18 +428,28 @@ public actor ImmichAPI {
         }
     }
 
-    public func getPlaybackUrl(path: String) async throws -> URL {
+    public func getUrlWithQueryAuth(
+        path: String,
+        queryParams: [String: String]?
+    ) async throws -> URL {
         // this method shouldn't be called as the first one,
         // so there's no need to catch 401 and log out user here
         guard let config = getConfig() else {
             throw ImmichAPIError.missingConfig
         }
 
-        let playbackUrl = try ImmichAPIClient(
+        var urlQueryParams = try await findAuthQueryParams()
+        if let queryParams {
+            urlQueryParams = urlQueryParams.merging(queryParams) { (_, new) in
+                new
+            }
+        }
+
+        let playbackUrl = ImmichAPIClient(
             baseURL: config.baseURL
         ).getUrl(
             path: path,
-            queryParams: await findAuthQueryParams(),
+            queryParams: urlQueryParams,
         )
         guard let playbackUrl else { throw ImmichAPIError.badUrl }
 
