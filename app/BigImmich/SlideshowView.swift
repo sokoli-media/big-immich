@@ -1,4 +1,5 @@
 import AVKit
+import ImmichAPI
 import Sentry
 import SwiftUI
 

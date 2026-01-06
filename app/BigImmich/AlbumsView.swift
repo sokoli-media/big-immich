@@ -1,3 +1,4 @@
+import ImmichAPI
 import Sentry
 import SwiftUI
 
@@ -114,17 +115,17 @@ struct AlbumsView: View {
 
     private func joinAlbums(_ albumLists: [Album]...) -> [Album] {
         let allAlbums = albumLists.flatMap { $0 }
-        
+
         var uniqueAlbums = [String: Album]()
         for album in allAlbums {
             if uniqueAlbums[album.id] == nil {
                 uniqueAlbums[album.id] = album
             }
         }
-        
+
         return uniqueAlbums.values.sorted { $0.startDate > $1.startDate }
     }
-    
+
     private func loadAlbums() async {
         isLoading = true
         do {
