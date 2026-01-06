@@ -113,32 +113,10 @@ struct AlbumsView: View {
         }
     }
 
-    private func joinAlbums(_ albumLists: [Album]...) -> [Album] {
-        let allAlbums = albumLists.flatMap { $0 }
-
-        var uniqueAlbums = [String: Album]()
-        for album in allAlbums {
-            if uniqueAlbums[album.id] == nil {
-                uniqueAlbums[album.id] = album
-            }
-        }
-
-        return uniqueAlbums.values.sorted { $0.startDate > $1.startDate }
-    }
-
     private func loadAlbums() async {
         isLoading = true
         do {
-            let ownAlbums: [Album] = try await ImmichAPI.shared.loadObject(
-                path: "/api/albums",
-                queryParams: [:],
-            )
-            let sharedAlbums: [Album] = try await ImmichAPI.shared.loadObject(
-                path: "/api/albums",
-                queryParams: ["shared": "true"],
-            )
-
-            self.albums = joinAlbums(ownAlbums, sharedAlbums)
+            self.albums = try await ImmichClient.shared.findAlbums()
         } catch ImmichAPIError.missingConfig {
             notYetSetUp = true
         } catch {

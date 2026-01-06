@@ -11,7 +11,7 @@ import TVServices
 class ContentProvider: TVTopShelfContentProvider {
 
     override func loadTopShelfContent() async -> (any TVTopShelfContent)? {
-        guard let albums = await loadAlbums() else {
+        guard let albums = try? await ImmichClient.shared.findAlbums() else {
             return nil
         }
 
@@ -65,35 +65,4 @@ class ContentProvider: TVTopShelfContentProvider {
             return nil
         }
     }
-
-    private func joinAlbums(_ albumLists: [Album]...) -> [Album] {
-        let allAlbums = albumLists.flatMap { $0 }
-
-        var uniqueAlbums = [String: Album]()
-        for album in allAlbums {
-            if uniqueAlbums[album.id] == nil {
-                uniqueAlbums[album.id] = album
-            }
-        }
-
-        return uniqueAlbums.values.sorted { $0.startDate > $1.startDate }
-    }
-
-    // TODO: this method is duplicated in AlbumsView, can we move it somewhere?
-    private func loadAlbums() async -> [Album]? {
-        do {
-            let ownAlbums: [Album] = try await ImmichAPI.shared.loadObject(
-                path: "/api/albums",
-                queryParams: [:],
-            )
-            let sharedAlbums: [Album] = try await ImmichAPI.shared.loadObject(
-                path: "/api/albums",
-                queryParams: ["shared": "true"],
-            )
-            return joinAlbums(ownAlbums, sharedAlbums)
-        } catch {
-            return nil
-        }
-    }
-
 }
